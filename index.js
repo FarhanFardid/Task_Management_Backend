@@ -37,19 +37,19 @@ async function run() {
 
      const taskCollection = client.db("taskDB").collection("tasks");
 
-    //  GET 
+    //  GET api
     app.get('/tasks', async(req,res)=>{
         const result = await taskCollection.find().toArray();
         res.send(result);
     })
-// POST
+// POST api
      app.post('/tasks', async(req,res)=>{
         const newTask = req.body;
         console.log(newTask);
         const result = await taskCollection.insertOne(newTask)
         res.send(result);
      })
-
+// Delete api
      app.delete('/tasks/:id', async(req,res)=>{
         const id= req.params.id;
         const query = {_id : new ObjectId(id)}
@@ -57,6 +57,19 @@ async function run() {
         res.send(result)
      })
 
+    // Update api
+    
+    app.patch('/tasks/:id', async(req,res)=>{
+        const id = req.params.id;
+        const filter = {_id : new ObjectId(id)}
+        const updateTask = {
+            $set: {
+              status: "completed"
+            },
+          };
+          const result = await taskCollection.updateOne(filter,updateTask)
+          res.send(result);
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
